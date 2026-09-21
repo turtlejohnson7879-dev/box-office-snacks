@@ -61,6 +61,6 @@ async function placeOrder(){if(!cart){alert('Please add a package to your cart f
 function updateThemeImage(){const images={original:"box-office-snacks-bucket.jpeg"christmas:'IMG_5221.jpeg',valentine:'IMG_5223.jpeg',date:'IMG_5222.jpeg',halloween:'HEIF Image.HEIC'};document.getElementById('themeImage').src=images[document.getElementById('theme').value];}
 
 document.getElementById('theme').addEventListener('change',updateThemeImage);
-  renderMenu();renderOptions();updateBuilder();
+renderMenu();renderOptions();updateBuilder();updateThemeImage();
 </script>
 </body></html>
