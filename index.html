@@ -58,7 +58,7 @@ function renderCart(){if(!cart){document.getElementById('emptyCart').classList.r
 function clearCart(){cart=null;renderCart();}
 function submitBulkRequest(){const n=document.getElementById('bulkName').value.trim(),e=document.getElementById('bulkEmail').value.trim();if(!n||!e){alert('Please enter your name/company and email.');return;}document.getElementById('bulkSuccess').style.display='block';}
 async function placeOrder(){if(!cart){alert('Please add a package to your cart first.');return;}try{const r=await fetch('/api/create-checkout-session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({packageName:cart.name})});const data=await r.json();if(!r.ok)throw new Error(data.error||'Checkout error');window.location.href=data.url;}catch(e){console.error(e);alert('Unable to start checkout. Please try again.');}}
-function updateThemeImage(){const images={original:"IMG_5222.jpeg",christmas:'IMG_5221.jpeg',valentine:'IMG_5223.jpeg',date:'IMG_5222.jpeg',halloween:'HEIF Image.HEIC'};document.getElementById('themeImage').src=images[document.getElementById('theme').value];}
+function updateThemeImage(){const images={original:"box-office-snacks-bucket.jpeg"christmas:'IMG_5221.jpeg',valentine:'IMG_5223.jpeg',date:'IMG_5222.jpeg',halloween:'HEIF Image.HEIC'};document.getElementById('themeImage').src=images[document.getElementById('theme').value];}
 
 document.getElementById('theme').addEventListener('change',updateThemeImage);
   renderMenu();renderOptions();updateBuilder();
