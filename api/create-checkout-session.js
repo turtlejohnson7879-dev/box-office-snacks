@@ -30,6 +30,14 @@ module.exports = async (req, res) => {
 
       },
 
+      "Date Night Bucket": {
+
+        name: "Date Night Bucket",
+
+        price: 8000,
+
+      },
+
       "Blockbuster Bundle": {
 
         name: "Blockbuster Bundle",
