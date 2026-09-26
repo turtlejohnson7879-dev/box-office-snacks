@@ -89,7 +89,18 @@ module.exports = async (req, res) => {
         allowed_countries: ["US"],
 
       },
-
+shipping_options: [
+  {
+    shipping_rate_data: {
+      type: "fixed_amount",
+      fixed_amount: {
+        amount: 1299,
+        currency: "usd",
+      },
+      display_name: "Flat Rate Shipping",
+    },
+  },
+],
       success_url: `${req.headers.origin}/?payment=success`,
 
       cancel_url: `${req.headers.origin}/?payment=cancelled`,
