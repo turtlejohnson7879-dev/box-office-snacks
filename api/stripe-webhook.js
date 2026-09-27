@@ -24,7 +24,7 @@ try {
     process.env.STRIPE_WEBHOOK_SECRET_SANDBOX
   );
 } catch (sandboxError) {
-console.error("Sandbox webhook error:", sandboxError.message);
+console.error("Sandbox webhook error:", sandboxError.message); 
   event = stripe.webhooks.constructEvent(
     rawBody,
     signature,
@@ -48,8 +48,8 @@ console.error("Sandbox webhook error:", sandboxError.message);
   } catch (error) {
     console.error("Webhook error:", error.message);
 
-    return res.status(400).json({
-      error: "Webhook signature verification failed",
-    });
+    res.statusCode = 400;
+res.setHeader("Content-Type", "application/json");
+return res.end(JSON.stringify({ error: "Webhook signature verification failed" }));
   }
 };
