@@ -24,6 +24,7 @@ try {
     process.env.STRIPE_WEBHOOK_SECRET_SANDBOX
   );
 } catch (sandboxError) {
+console.error("Sandbox webhook error:", sandboxError.message);
   event = stripe.webhooks.constructEvent(
     rawBody,
     signature,
