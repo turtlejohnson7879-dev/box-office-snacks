@@ -15,11 +15,22 @@ module.exports = async (req, res) => {
       rawBody += chunk;
     }
 
-    const event = stripe.webhooks.constructEvent(
-      rawBody,
-      signature,
-      process.env.STRIPE_WEBHOOK_SECRET
-    );
+  let event;
+
+try {
+  event = stripe.webhooks.constructEvent(
+    rawBody,
+    signature,
+    process.env.STRIPE_WEBHOOK_SECRET_SANDBOX
+  );
+} catch (sandboxError) {
+  event = stripe.webhooks.constructEvent(
+    rawBody,
+    signature,
+    process.env.STRIPE_WEBHOOK_SECRET
+  );
+}
+    
 
     if (event.type === "checkout.session.completed") {
       const session = event.data.object;
