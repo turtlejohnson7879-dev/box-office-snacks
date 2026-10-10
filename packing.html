@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Box Office Snacks — Packing Checklist</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 24px;
+    background: #eee;
+    color: #111;
+    font-family: Arial, sans-serif;
+  }
+  .controls {
+    max-width: 650px;
+    margin: 0 auto 24px;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+  }
+  h1 { font-size: 24px; }
+  label { display: block; margin-top: 12px; }
+  input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    font-size: 16px;
+  }
+  button {
+    padding: 12px 16px;
+    margin: 12px 6px 0 0;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  #message { line-height: 1.4; }
+  .label {
+    width: 3.6in;
+    height: 5.6in;
+    margin: 0 auto 20px;
+    background: white;
+    padding: 0.1in;
+    font-size: 11pt;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+  }
+  .heading {
+    font-size: 15pt;
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+  .details {
+    font-size: 10pt;
+    padding-bottom: 7px;
+    border-bottom: 2px solid black;
+    margin-bottom: 7px;
+  }
+  .row {
+    display: flex;
+    gap: 7px;
+    padding: 3px 0;
+    break-inside: avoid;
+  }
+  .box {
+    flex: 0 0 12px;
+    height: 12px;
+    border: 1.5px solid black;
+    margin-top: 2px;
+  }
+  .section {
+    font-weight: bold;
+    border-bottom: 1px solid black;
+    margin: 7px 0 3px;
+  }
+  @page { size: 4in 6in; margin: 0.2in; }
+  @media print {
+    body { margin: 0; padding: 0; background: white; }
+    .controls { display: none; }
+    .label {
+      margin: 0;
+      break-after: page;
+    }
+    .label:last-child { break-after: auto; }
+  }
+</style>
+</head>
+<body>
+<div class="controls">
+  <h1>Box Office Snacks Packing Checklist</h1>
+  <p>Load a paid order, then print its packing checklist.</p>
+
+  <label for="orderId">Stripe Checkout Session ID</label>
+  <input id="orderId" placeholder="cs_live_..."
+         autocomplete="off">
+
+  <label for="password">Owner packing password</label>
+  <input id="password" type="password"
+         autocomplete="off">
+
+  <button id="load">Load paid order</button>
+  <button id="sample">Show sample</button>
+  <button id="print" disabled>Print 4 × 6</button>
+
+  <p id="message" role="status">
+    Print with LP320, 4 × 6 paper, 100% scale,
+    and browser headers and footers turned off.
+    Large orders use additional labels.
+  </p>
+</div>
+
+<main id="labels"></main>
+
+<script>
+const labels = document.getElementById("labels");
+const message = document.getElementById("message");
+const printButton = document.getElementById("print");
+
+function element(tag, text, className) {
+  const node = document.createElement(tag);
+  if (text !== undefined) node.textContent = text;
+  if (className) node.className = className;
+  return node;
+}
+
+function quantities(items) {
+  const counts = new Map();
+  for (const item of items || []) {
+    counts.set(item, (counts.get(item) || 0) + 1);
+  }
+  return [...counts].map(
+    ([name, count]) => `${count} × ${name}`
+  );
+}
+
+function renderOrder(order, sample = false) {
+  labels.replaceChildren();
+  printButton.disabled = true;
+
+  let page;
+  let pageNumber = 0;
+  let currentSection = "";
+
+  function newPage() {
+    pageNumber++;
+    page = element("article", undefined, "label");
+    page.append(
+      element("div", "BOX OFFICE SNACKS", "heading")
+    );
+
+    const details = element("div", undefined, "details");
+
+    [
+      sample ? "SAMPLE — NOT A PAID ORDER" : "PAID ORDER",
+      order.customer_name || "Customer name unavailable",
+      `${order.package} • ${order.theme || "Original"}`,
+      `${order.fulfillment || ""} • Label ${pageNumber}`,
+      `Order: ${order.id}`
+    ].forEach(text => {
+      details.append(element("div", text));
+    });
+
+    page.append(details);
+    labels.append(page);
+  }
+
+  function section(title, items) {
+    if (!items.length) return;
+    currentSection = title;
+
+    let heading = element("div", title, "section");
+    page.append(heading);
+
+    for (const text of items) {
+      const row = element("div", undefined, "row");
+      row.append(
+        element("span", undefined, "box"),
+        element("span", text)
+      );
+      page.append(row);
+
+      if (page.scrollHeight > page.clientHeight) {
+        row.remove();
+
+        // Avoid leaving an empty section heading behind.
+        if (heading === page.lastElementChild) {
+          heading.remove();
+        }
+
+        newPage();
+        heading = element(
+          "div",
+          currentSection + " (continued)",
+          "section"
+        );
+        page.append(heading, row);
+      }
+    }
+  }
+
+  newPage();
+  section("SNACKS", quantities(order.snacks));
+  section("DRINKS", quantities(order.drinks));
+  section("T-SHIRTS", quantities(order.shirts));
+  section("CANDY CUPS", [
+    `${order.candy_cups} candy cup(s)`
+  ]);
+  section("EXTRA POPCORN", quantities(order.popcorns));
+  section("BUBBLY", order.bubbly ? [order.bubbly] : []);
+  section(
+    "INCLUDED EXTRAS",
+    order.included
+      ? order.included.split(";")
+          .map(item => item.trim())
+          .filter(Boolean)
+      : []
+  );
+  section("FINAL CHECK", [
+    "All items packed",
+    "Packed by: __________"
+  ]);
+
+  printButton.disabled = false;
+}
+
+document.getElementById("sample").onclick = () => {
+  renderOrder({
+    id: "SAMPLE-001",
+    customer_name: "Test Customer",
+    package: "Solo Scene",
+    theme: "Original",
+    fulfillment: "Shipping",
+    snacks: [
+      "Doritos",
+      "Cheese Puffs",
+      "Hot Chips",
+      "Funyuns Onion Rings",
+      "Cool Ranch Doritos",
+      "Nutty Buddies",
+      "Chocolate Cupcakes",
+      "Powdered Donuts",
+      "Sweet & Salty Trail Mix",
+      "Oatmeal Cakes",
+      "Butter Popcorn",
+      "Double Cheddar Popcorn"
+    ],
+    drinks: ["Red Hawaiian Punch"],
+    shirts: ["M"],
+    candy_cups: 1,
+    popcorns: []
+  }, true);
+
+  message.textContent =
+    "Sample checklist ready. Click Print 4 × 6 to test the layout.";
+};
+
+document.getElementById("load").onclick = async () => {
+  labels.replaceChildren();
+  printButton.disabled = true;
+
+  const orderId =
+    document.getElementById("orderId").value.trim();
+  const password =
+    document.getElementById("password").value;
+
+  if (!orderId || !password) {
+    message.textContent =
+      "Enter the order ID and owner packing password.";
+    return;
+  }
+
+  message.textContent = "Loading order…";
+
+  try {
+    const response = await fetch("/api/packing-order", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ orderId, password }),
+      cache: "no-store"
+    });
+
+    const contentType =
+      response.headers.get("content-type") || "";
+
+    if (!contentType.includes("application/json")) {
+      throw new Error(
+        "The paid-order connection has not been installed yet."
+      );
+    }
+
+    const order = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        order.error || "Unable to load order."
+      );
+    }
+
+    renderOrder(order);
+    message.textContent =
+      "Paid order loaded. Ready to print.";
+  } catch (error) {
+    message.textContent = error.message;
+  }
+};
+
+printButton.onclick = () => window.print();
+</script>
+</body>
+</html>
