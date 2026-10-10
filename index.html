@@ -56,7 +56,32 @@ function addToCart(){const key=document.getElementById('pkg').value,p=packages[k
 function renderCart(){if(!cart){document.getElementById('emptyCart').classList.remove('hidden');document.getElementById('checkoutContent').classList.add('hidden');document.getElementById('cart').textContent='🛒 Cart: 0';return}document.getElementById('emptyCart').classList.add('hidden');document.getElementById('checkoutContent').classList.remove('hidden');document.getElementById('cart').textContent='🛒 Cart: 1';let extra='';if(cart.dateNight){extra=`<div class="summary-row"><span>Popcorn flavors</span><span>${cart.popcorns.join(', ')}</span></div><div class="summary-row"><span>Non-alcoholic bubbly</span><span>${cart.bubbly}</span></div><div class="summary-row"><strong>Date Night keepsakes</strong><span>Included</span></div><div>${cart.included.map(x=>`<div style="padding:4px 0;color:#ccc">❤️ ${x}</div>`).join('')}</div>`;}document.getElementById('orderSummary').innerHTML=`<div class="summary-row"><strong>${cart.name}</strong><strong>$${cart.price}</strong></div><div class="summary-row"><span>Snacks (${cart.snacks.length})</span><span>Selected</span></div><div>${cart.snacks.map(s=>`<div style="padding:4px 0;color:#ccc">🍿 ${s}</div>`).join('')}</div><div class="summary-row"><span>Drinks</span><span>${cart.drinks.join(', ')}</span></div><div class="summary-row"><span>T-shirt sizes</span><span>${cart.shirts.join(', ')}</span></div><div class="summary-row"><span>Surprise candy cups</span><span>${cart.candyCups}</span></div>${extra}<div class="summary-row"><span>Shipping and tax</span><span>Calculated separately</span></div>`}
 function clearCart(){cart=null;renderCart();}
 function submitBulkRequest(){const n=document.getElementById('bulkName').value.trim(),e=document.getElementById('bulkEmail').value.trim();if(!n||!e){alert('Please enter your name/company and email.');return;}document.getElementById('bulkSuccess').style.display='block';}
-async function placeOrder(){if(!cart){alert('Please add a package to your cart first.');return;}try{const r=await fetch('/api/create-checkout-session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({packageName:cart.name})});const data=await r.json();if(!r.ok)throw new Error(data.error||'Checkout error');window.location.href=data.url;}catch(e){console.error(e);alert('Unable to start checkout. Please try again.');}}
+async function placeOrder() {
+  if (!cart) {
+    alert('Please add a package to your cart first.');
+    return;
+  }
+
+  const friendsCode = new URLSearchParams(window.location.search).get('code');
+
+  try {
+    const r = await fetch('/api/create-checkout-session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        packageName: cart.name,
+        friendsCode: friendsCode
+      })
+    });
+
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || 'Checkout error');
+    window.location.href = data.url;
+  } catch (e) {
+    console.error(e);
+    alert('Unable to start checkout. Please try again.');
+  }
+}
 function updateThemeImage(){const images={original:"box-office-snacks-bucket.jpeg",christmas:"IMG_5221.jpeg",valentine:"IMG_5223.jpeg",date:"IMG_5222.jpeg",halloween:"hollween.jpg"};const theme=document.getElementById("theme").value;document.getElementById("themeImage").src=images[theme];}
 
 document.getElementById('theme').addEventListener('change',updateThemeImage);
