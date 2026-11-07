@@ -31,12 +31,12 @@ module.exports = async (req, res) => {
       shipping_rate_data: {
         type: "fixed_amount",
         fixed_amount: {
-          amount: isFriendsOrder ? 0 : 1299,
+        amount: 0, 
           currency: "usd",
         },
         display_name: isFriendsOrder
           ? "Family & Friends Local Pickup - FREE"
-          : "Flat Rate Shipping",
+         : "Free Shipping",
       },
     }];
 
