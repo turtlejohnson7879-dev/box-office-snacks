@@ -27,18 +27,22 @@ module.exports = async (req, res) => {
       friendsCode === process.env.FRIENDS_PICKUP_CODE
     );
 
-    const shippingOptions = [{
-      shipping_rate_data: {
-        type: "fixed_amount",
-        fixed_amount: {
-        amount: 0, 
-          currency: "usd",
-        },
-        display_name: isFriendsOrder
-          ? "Family & Friends Local Pickup - FREE"
-         : "Free Shipping",
-      },
-    }];
+  
+const shippingOptions = [{
+  shipping_rate_data: {
+    type: "fixed_amount",
+    fixed_amount: {
+     
+amount: isFriendsOrder ? 0 : 1439,
+
+      currency: "usd",
+    },
+    display_name: isFriendsOrder
+      ? "Family & Friends Local Pickup - FREE"
+      : "Flat Rate Shipping",
+  },
+}];
+
 
     const metadata = {
       package: selected.name,
