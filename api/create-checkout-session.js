@@ -12,7 +12,22 @@ module.exports = async (req, res) => {
       "Solo Scene": { name: "Solo Scene", price: 5000 },
       "Dynamic Duo": { name: "Dynamic Duo", price: 8000 },
       "Date Night Bucket": { name: "Date Night Bucket", price: 8000 },
-     
+  
+"Christmas Solo Scene Special Edition": {
+  name: "Christmas Solo Scene Special Edition",
+  price: 5999,
+},
+
+"Halloween Special Edition": {
+  name: "Halloween Special Edition",
+  price: 5999,
+},
+
+
+
+
+
+   
     };
 
     const selected = packages[packageName];
