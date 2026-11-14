@@ -23,6 +23,11 @@ module.exports = async (req, res) => {
   price: 5999,
 },
 
+"Valentine's Special Edition": {
+  name: "Valentine's Special Edition",
+  price: 5999,
+},
+
 
 
 
