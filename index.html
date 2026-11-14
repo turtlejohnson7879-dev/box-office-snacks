@@ -22,7 +22,7 @@
 </div><div style="text-align:center;margin-top:28px"><p class="eyebrow">PRESS PLAY FOR THE BOX OFFICE SNACKS THEME</p><audio controls style="width:min(100%,420px)"><source src="box-office-snacks.mp3" type="audio/mpeg">Your browser does not support the audio player.</audio></div></section>
 <section id="date-night" class="date-night"><div class="date-wrap"><div><img class="date-image" src="IMG_5222.jpeg" alt="Box Office Snacks Date Night bucket"></div><div class="date-copy"><p class="eyebrow">A COMPLETE MOVIE DATE FOR TWO</p><h2>Build Your Date Night Bucket</h2><p>Choose the treats you both love and see exactly what will arrive. Your keepsakes and romantic extras are included automatically.</p><div class="included-grid"><div class="included-item"><strong>24 snacks</strong><br>Your selections</div><div class="included-item"><strong>2 drinks</strong><br>Your selections</div><div class="included-item"><strong>2 T-shirts</strong><br>Your sizes</div><div class="included-item"><strong>2 wine glasses</strong><br>Included</div><div class="included-item"><strong>2 candy cups</strong><br>Included</div><div class="included-item"><strong>Trivia card set</strong><br>His & Hers movie trivia</div><div class="included-item"><strong>2 keepsake tickets</strong><br>LOVE 01 and LOVE 02</div><div class="included-item"><strong>Romantic extras</strong><br1 scented candle</div></div><button class="btn" onclick="startDateNight()">CUSTOMIZE YOURS — $80</button></div></div></section>
 <section id="build"><h2>Build Your Bucket</h2><p class="sub">Select the exact number of snacks required for your package.</p><div class="builder">
-<label for="pkg">Package</label><select id="pkg" onchange="resetSelections()"><option value="solo">Solo Scene - $50</option><option value="duo">Dynamic Duo - $80</option><option value="date">Date Night - $80</option></select>
+<label for="pkg">Package</label><select id="pkg" onchange="resetSelections()"><option value="solo">Solo Scene - $50</option><option value="duo">Dynamic Duo - $80</option><option value="date"> <option value="Date Night Bucket">Date Night Bucket - $80.00</option> <option value="Christmas Solo Scene Special Edition">Christmas Solo Scene Special Edition - $59.99</option> <option value="Halloween Special Edition">Halloween Special Edition - $59.99</option> <option value="Valentine's Special Edition">Valentine's Special Edition - $59.99</option></select>
 <div class="count">Snacks selected: <span id="snackCount">0</span> / <span id="snackNeed">12</span></div>
 <div class="menu" id="snackList"></div>
 <div id="snackMessage" class="notice">Choose 12 snacks to continue.</div>
@@ -47,6 +47,30 @@ const popcorns=['Butter Popcorn','Double Cheddar Popcorn','White Cheddar Popcorn
 
 const packages={solo:{name:'Solo Scene',price:50,need:12,people:1},duo:{name:'Dynamic Duo',price:80,need:24,people:2},date:{name:'Date Night Bucket',price:80,need:24,people:2,dateNight:true}};
 
+Object.assign(packages, {
+
+"Christmas Solo Scene Special Edition": {
+  name: "Christmas Solo Scene Special Edition",
+ 
+price: 59.99, need: 12, people: 1,
+
+
+},
+
+"Halloween Special Edition": {
+  name: "Halloween Special Edition",
+
+price: 59.99, need: 12, people: 1,
+
+},
+
+"Valentine's Special Edition": {
+  name: "Valentine's Special Edition",
+ 
+price: 59.99, need: 12, people: 1,
+
+},
+});
 let cart=null;
 function renderMenu(){document.getElementById('menuList').innerHTML=snacks.map(s=>`<div class="snack">🍿 ${s}</div>`).join('');document.getElementById('snackList').innerHTML=snacks.map((s,i)=>`<div class="snack"><label><input type="checkbox" value="${i}" onchange="updateBuilder()"> ${s}</label></div>`).join('');document.getElementById('popcorn1').innerHTML=popcorns.map(p=>`<option>${p}</option>`).join('');document.getElementById('popcorn2').innerHTML=popcorns.map((p,i)=>`<option${i===1?' selected':''}>${p}</option>`).join('');}
 function renderOptions(){const p=packages[document.getElementById('pkg').value];document.getElementById('drinks').innerHTML=Array.from({length:p.people},(_,i)=>`<label>Drink ${i+1}<select class="drink"><option>${drinks.join('</option><option>')}</option></select></label>`).join('');document.getElementById('shirts').innerHTML=Array.from({length:p.people},(_,i)=>`<label>Shirt ${i+1}<select class="shirt"><option>XS</option><option>S</option><option selected>M</option><option>L</option><option>XL</option><option>2XL</option><option>3XL</option><option>4XL</option></select></label>`).join('');document.getElementById('snackNeed').textContent=p.need;document.getElementById('total').textContent=p.price;document.getElementById('dateOptions').classList.toggle('hidden',!p.dateNight);if(p.dateNight){document.getElementById('theme').value='date';updateThemeImage();}}
